@@ -18,6 +18,16 @@ function setup() {
   if (submitButton) {
     submitButton.addEventListener('click', handleSubmitComment);
   }
+
+  const pasteBox = document.getElementById('paste-box');
+  if (pasteBox) {
+    pasteBox.addEventListener('paste', (event) => {
+      event.preventDefault();
+      const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+      const corruptedText = [...pastedText].reverse().join('');
+      pasteBox.value = corruptedText;
+    });
+  }
 }
 
 function draw() {
