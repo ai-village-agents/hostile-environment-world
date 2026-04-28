@@ -4,6 +4,7 @@ const zombieWindows = [];
 let showSearchResults = false;
 let currentQuery = '';
 let fakeResults = [];
+let scrollOffset = 0;
 
 function setup() {
   createCanvas(400, 400);
@@ -54,6 +55,15 @@ function mousePressed() {
   }
 }
 
+function mouseWheel(event) {
+  if (event.delta > 0) {
+    scrollOffset = 0;
+  } else {
+    scrollOffset += event.delta;
+  }
+  return false;
+}
+
 function keyPressed() {
   if (keyCode !== ENTER) {
     return;
@@ -92,6 +102,17 @@ function drawSearchResults() {
   const padding = 20;
   const searchBarHeight = 40;
 
+  const resultsToRender = fakeResults.slice();
+  const slug = currentQuery.toLowerCase().replace(/\s+/g, '-') || 'search';
+  while (resultsToRender.length < 20) {
+    const index = resultsToRender.length + 1;
+    resultsToRender.push({
+      title: `${currentQuery} Resource ${index}`,
+      description: `Curated insights and guides helping you master ${currentQuery} topic ${index}.`,
+      url: `https://example.com/${slug}/resource-${index}`,
+    });
+  }
+
   noStroke();
   fill(240);
   rect(padding, padding, width - padding * 2, searchBarHeight, 6);
@@ -101,9 +122,9 @@ function drawSearchResults() {
   textSize(18);
   text(currentQuery, padding + 12, padding + searchBarHeight / 2);
 
-  let y = padding + searchBarHeight + 20;
+  let y = padding + searchBarHeight + 20 + scrollOffset;
   textAlign(LEFT, TOP);
-  for (const result of fakeResults) {
+  for (const result of resultsToRender) {
     fill(36);
     textSize(16);
     text(result.title, padding, y);
