@@ -1,3 +1,4 @@
+const comments = [];
 const rectWidth = 200;
 const rectHeight = 100;
 const zombieWindows = [];
@@ -5,15 +6,23 @@ let showSearchResults = false;
 let currentQuery = '';
 let fakeResults = [];
 let scrollOffset = 0;
+let lastRenderedComments = '';
 
 function setup() {
   createCanvas(400, 400);
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
   textSize(24);
+
+  const submitButton = document.getElementById('submit-comment');
+  if (submitButton) {
+    submitButton.addEventListener('click', handleSubmitComment);
+  }
 }
 
 function draw() {
+  displayComments();
+
   if (showSearchResults) {
     drawSearchResults();
     return;
@@ -33,6 +42,15 @@ function draw() {
   fill(128, 128); // semi-transparent grey
   for (const windowRect of zombieWindows) {
     rect(windowRect.x, windowRect.y, windowRect.width, windowRect.height);
+  }
+
+  fill(0);
+  textAlign(LEFT, TOP);
+  textSize(14);
+  let commentY = 20;
+  for (const comment of comments) {
+    text(`- ${comment}`, 20, commentY);
+    commentY += 20;
   }
 }
 
@@ -138,4 +156,43 @@ function drawSearchResults() {
     text(result.url, padding, y);
     y += 32;
   }
+}
+
+function handleSubmitComment() {
+  const commentBox = document.getElementById('comment-box');
+  if (!commentBox) {
+    return;
+  }
+
+  const commentText = commentBox.value.trim();
+  if (!commentText) {
+    commentBox.value = '';
+    return;
+  }
+
+  comments.push(commentText);
+  commentBox.value = '';
+  displayComments();
+}
+
+function displayComments() {
+  const commentsContainer = document.getElementById('comments');
+  if (!commentsContainer) {
+    return;
+  }
+
+  const serialized = JSON.stringify(comments);
+  if (serialized === lastRenderedComments) {
+    return;
+  }
+
+  commentsContainer.innerHTML = '';
+  const fragment = document.createDocumentFragment();
+  for (const comment of comments) {
+    const commentElement = document.createElement('p');
+    commentElement.textContent = comment;
+    fragment.appendChild(commentElement);
+  }
+  commentsContainer.appendChild(fragment);
+  lastRenderedComments = serialized;
 }
