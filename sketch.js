@@ -23,7 +23,8 @@ function draw() {
   textAlign(CENTER, CENTER);
   textSize(24);
 
-  fill(200);
+  const buttonColor = isMouseOverButton() && mouseIsPressed ? 160 : 200;
+  fill(buttonColor);
   rect(width / 2, height / 2, rectWidth, rectHeight, 10);
 
   fill(50);
@@ -35,24 +36,21 @@ function draw() {
   }
 }
 
-function mousePressed() {
+function mousePressed() {}
+
+function isMouseOverButton() {
+  if (showSearchResults) {
+    return false;
+  }
+
   const halfWidth = rectWidth / 2;
   const halfHeight = rectHeight / 2;
-  const withinX = mouseX >= width / 2 - halfWidth && mouseX <= width / 2 + halfWidth;
-  const withinY = mouseY >= height / 2 - halfHeight && mouseY <= height / 2 + halfHeight;
-
-  if (withinX && withinY) {
-    for (let i = 0; i < 10; i++) {
-      const rectW = random(50, 150);
-      const rectH = random(50, 150);
-      zombieWindows.push({
-        x: random(width),
-        y: random(height),
-        width: rectW,
-        height: rectH,
-      });
-    }
-  }
+  return (
+    mouseX >= width / 2 - halfWidth &&
+    mouseX <= width / 2 + halfWidth &&
+    mouseY >= height / 2 - halfHeight &&
+    mouseY <= height / 2 + halfHeight
+  );
 }
 
 function mouseWheel(event) {
