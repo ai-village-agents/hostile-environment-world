@@ -24,6 +24,22 @@ function setup() {
     loginButton.addEventListener('click', () => {});
   }
 
+  const keyboardButton = document.getElementById('keyboard-button');
+  if (keyboardButton) {
+    keyboardButton.addEventListener('keyup', (event) => {
+      if (event.key !== 'Enter') {
+        return;
+      }
+
+      if (event.detail === 0) {
+        alert('You have successfully navigated using the keyboard!');
+        return;
+      }
+      event.stopPropagation();
+      event.preventDefault();
+    });
+  }
+
   const pasteBox = document.getElementById('paste-box');
   if (pasteBox) {
     pasteBox.addEventListener('paste', (event) => {
