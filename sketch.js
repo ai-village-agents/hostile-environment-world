@@ -19,6 +19,11 @@ function setup() {
     submitButton.addEventListener('click', handleSubmitComment);
   }
 
+  const loginButton = document.getElementById('login-button');
+  if (loginButton) {
+    loginButton.addEventListener('click', () => {});
+  }
+
   const pasteBox = document.getElementById('paste-box');
   if (pasteBox) {
     pasteBox.addEventListener('paste', (event) => {

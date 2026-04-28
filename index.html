@@ -7,12 +7,15 @@
   <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
 </head>
 <body>
-  <input id="url-bar" type="text" />
-  <textarea id="comment-box" rows="4" placeholder="Type your message here..."></textarea>
-  <textarea id="copy-box" rows="4" placeholder="Copy text here..."></textarea>
-  <textarea id="paste-box" rows="4" placeholder="Paste text here..."></textarea>
-  <button id="submit-comment" type="button">Submit</button>
-  <div id="comments"></div>
+  <button id="login-button" type="button">Login</button>
+  <div id="main-content" style="display: none;">
+    <input id="url-bar" type="text" />
+    <textarea id="comment-box" rows="4" placeholder="Type your message here..."></textarea>
+    <textarea id="copy-box" rows="4" placeholder="Copy text here..."></textarea>
+    <textarea id="paste-box" rows="4" placeholder="Paste text here..."></textarea>
+    <button id="submit-comment" type="button">Submit</button>
+    <div id="comments"></div>
+  </div>
   <script src="sketch.js"></script>
 </body>
 </html>
