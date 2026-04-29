@@ -67,6 +67,14 @@ function setup() {
       fileExplorer.classList.toggle('hidden');
     });
   }
+
+  const terminal = document.getElementById('terminal');
+  if (terminal) {
+    terminal.addEventListener('keydown', (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+    });
+  }
 }
 
 function draw() {
