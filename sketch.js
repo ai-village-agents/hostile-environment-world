@@ -19,6 +19,23 @@ function setup() {
     submitButton.addEventListener('click', handleSubmitComment);
   }
 
+  const dummyEntries = [
+    '/home',
+    '/home/user',
+    '/home/user/documents',
+    '/home/user/documents/report.pdf',
+    '/etc',
+    '/etc/config.txt',
+  ];
+  const fileExplorerContainer = document.getElementById('file-explorer-container');
+  if (fileExplorerContainer) {
+    for (const entry of dummyEntries) {
+      const entryDiv = document.createElement('div');
+      entryDiv.textContent = entry;
+      fileExplorerContainer.appendChild(entryDiv);
+    }
+  }
+
   const loginButton = document.getElementById('login-button');
   if (loginButton) {
     loginButton.addEventListener('click', () => {});
@@ -27,6 +44,20 @@ function setup() {
   const uploadButton = document.getElementById('upload-button');
   if (uploadButton) {
     uploadButton.addEventListener('click', () => {});
+  }
+
+  const goButton = document.getElementById('go-button');
+  const pathInput = document.getElementById('path-input');
+  const pathError = document.getElementById('path-error');
+  if (goButton && pathInput && pathError) {
+    goButton.addEventListener('click', () => {
+      const pathValue = pathInput.value || '';
+      if (!pathValue.startsWith('/')) {
+        pathError.style.display = 'block';
+        return;
+      }
+      pathError.style.display = 'none';
+    });
   }
 
   const restartButton = document.getElementById('restart-server');
