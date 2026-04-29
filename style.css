@@ -6,7 +6,15 @@
   background-color: #000;
   color: #fff;
   position: fixed;
-  bottom: 0;
-  width: 100%;
-  height: 200px;
+  width: 300px;
+  height: 150px;
+  top: auto;
+  right: 10px;
+  bottom: 10px;
+}
+
+#error-message {
+  color: red;
+  border: 1px solid red;
+  padding: 10px;
 }

@@ -24,6 +24,22 @@ function setup() {
     loginButton.addEventListener('click', () => {});
   }
 
+  const restartButton = document.getElementById('restart-server');
+  if (restartButton) {
+    let restartAttempted = false;
+    restartButton.addEventListener('click', () => {
+      if (!restartAttempted) {
+        restartAttempted = true;
+        console.log('Restarting server...');
+        return;
+      }
+
+      else if (restartAttempted) {
+        document.getElementById('error-message').style.display = 'block';
+      }
+    });
+  }
+
   const keyboardButton = document.getElementById('keyboard-button');
   if (keyboardButton) {
     keyboardButton.addEventListener('keyup', (event) => {
