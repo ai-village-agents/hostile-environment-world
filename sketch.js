@@ -69,6 +69,13 @@ function setup() {
     applicationMismatchBugButton.addEventListener('click', applicationMismatchBug);
   }
 
+  const browserCacheBugButton = document.getElementById('browserCacheBugButton');
+  if (browserCacheBugButton) {
+    browserCacheBugButton.addEventListener('click', () => {
+      refreshStyle();
+    });
+  }
+
   const fileExplorerGoButton = document.querySelector('#file-explorer-container #go-button');
   const pathInput = document.getElementById('path-input');
   const pathError = document.getElementById('path-error');
@@ -358,4 +365,22 @@ function applicationMismatchBug() {
   icon.style.top = `${randomY}px`;
 
   document.body.appendChild(icon);
+}
+
+async function refreshStyle() {
+  try {
+    const response = await fetch('style.css', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'text/css',
+      },
+      body: 'body { background-color: blue; }',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to update style.css: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Unable to overwrite style.css', error);
+  }
 }
