@@ -36,6 +36,15 @@ function setup() {
     }
   }
 
+  const configFileInput = document.getElementById('config-file');
+  if (configFileInput) {
+    configFileInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+      }
+    });
+  }
+
   const loginButton = document.getElementById('login-button');
   if (loginButton) {
     loginButton.addEventListener('click', () => {});
