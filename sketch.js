@@ -86,10 +86,19 @@ function setup() {
 
   const terminal = document.getElementById('terminal');
   if (terminal) {
-    terminal.addEventListener('keydown', (event) => {
+    const suppressTerminalKeys = (event) => {
       event.stopPropagation();
       event.preventDefault();
-    });
+    };
+    terminal.addEventListener('keydown', suppressTerminalKeys);
+    const prompt = document.createElement("span");
+    prompt.textContent = "> ";
+    terminal.appendChild(prompt);
+
+    const cursor = document.createElement("span");
+    cursor.textContent = "_";
+    cursor.classList.add("cursor");
+    terminal.appendChild(cursor);
   }
 }
 
