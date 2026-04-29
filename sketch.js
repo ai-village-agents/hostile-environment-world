@@ -24,6 +24,11 @@ function setup() {
     loginButton.addEventListener('click', () => {});
   }
 
+  const uploadButton = document.getElementById('upload-button');
+  if (uploadButton) {
+    uploadButton.addEventListener('click', () => {});
+  }
+
   const restartButton = document.getElementById('restart-server');
   if (restartButton) {
     let restartAttempted = false;
