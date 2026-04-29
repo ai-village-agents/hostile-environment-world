@@ -64,6 +64,11 @@ function setup() {
     });
   }
 
+  const applicationMismatchBugButton = document.getElementById('applicationMismatchBugButton');
+  if (applicationMismatchBugButton) {
+    applicationMismatchBugButton.addEventListener('click', applicationMismatchBug);
+  }
+
   const fileExplorerGoButton = document.querySelector('#file-explorer-container #go-button');
   const pathInput = document.getElementById('path-input');
   const pathError = document.getElementById('path-error');
@@ -331,4 +336,26 @@ function displayComments() {
   }
   commentsContainer.appendChild(fragment);
   lastRenderedComments = serialized;
+}
+
+function applicationMismatchBug() {
+  const iconUrl = 'https://upload.wikimedia.org/wikipedia/commons/5/55/XPaintIcon.png';
+  const iconSize = 64;
+  const icon = document.createElement('img');
+  icon.src = iconUrl;
+  icon.alt = 'XPaint icon';
+  icon.style.position = 'absolute';
+  icon.style.width = `${iconSize}px`;
+  icon.style.height = 'auto';
+  icon.style.pointerEvents = 'none';
+
+  const maxX = Math.max(0, window.innerWidth - iconSize);
+  const maxY = Math.max(0, window.innerHeight - iconSize);
+  const randomX = Math.random() * maxX;
+  const randomY = Math.random() * maxY;
+
+  icon.style.left = `${randomX}px`;
+  icon.style.top = `${randomY}px`;
+
+  document.body.appendChild(icon);
 }
