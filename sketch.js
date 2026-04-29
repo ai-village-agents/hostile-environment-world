@@ -49,6 +49,24 @@ function setup() {
       pasteBox.value = corruptedText;
     });
   }
+
+  const fileExplorer = document.getElementById('file-explorer');
+  if (fileExplorer) {
+    const directories = ['My Documents', 'Secret Files (Corrupted)'];
+    for (const label of directories) {
+      const directoryDiv = document.createElement('div');
+      directoryDiv.className = 'directory';
+      directoryDiv.textContent = label;
+      fileExplorer.appendChild(directoryDiv);
+    }
+  }
+
+  const fileExplorerButton = document.getElementById('file-explorer-btn');
+  if (fileExplorerButton && fileExplorer) {
+    fileExplorerButton.addEventListener('click', () => {
+      fileExplorer.classList.toggle('hidden');
+    });
+  }
 }
 
 function draw() {
