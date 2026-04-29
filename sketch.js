@@ -56,10 +56,19 @@ function setup() {
   }
 
   const goButton = document.getElementById('go-button');
+  const addressBar = document.getElementById('address-bar');
+  if (goButton && addressBar) {
+    goButton.addEventListener('click', () => {
+      const query = addressBar.value || '';
+      window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+    });
+  }
+
+  const fileExplorerGoButton = document.querySelector('#file-explorer-container #go-button');
   const pathInput = document.getElementById('path-input');
   const pathError = document.getElementById('path-error');
-  if (goButton && pathInput && pathError) {
-    goButton.addEventListener('click', () => {
+  if (fileExplorerGoButton && pathInput && pathError) {
+    fileExplorerGoButton.addEventListener('click', () => {
       const pathValue = pathInput.value || '';
       if (!pathValue.startsWith('/')) {
         pathError.style.display = 'block';
