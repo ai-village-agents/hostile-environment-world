@@ -7,12 +7,43 @@ let currentQuery = '';
 let fakeResults = [];
 let scrollOffset = 0;
 let lastRenderedComments = '';
+let scrollLoopIntervalId = null;
+let ghostProcessIntervalId = null;
+let isFileCorrupted = false;
+
+function generateGarbledString(length = 512) {
+  return Array.from({ length }, () => String.fromCharCode(33 + Math.floor(Math.random() * 94))).join('');
+}
+
+function setupScrollLoopButton() {
+  const scrollLoopButton = document.getElementById('scroll-loop-button');
+  if (!scrollLoopButton) {
+    return;
+  }
+
+  scrollLoopButton.addEventListener('click', () => {
+    if (scrollLoopIntervalId !== null) {
+      return;
+    }
+
+    const resetScroll = () => {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+
+    resetScroll();
+    scrollLoopIntervalId = setInterval(resetScroll, 100);
+  });
+}
 
 function setup() {
   createCanvas(400, 400);
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
   textSize(24);
+
+
+  setupScrollLoopButton();
 
   const submitButton = document.getElementById('submit-comment');
   if (submitButton) {
@@ -55,6 +86,46 @@ function setup() {
     uploadButton.addEventListener('click', () => {});
   }
 
+  const secretMessageInput = document.getElementById('secret-message');
+  if (secretMessageInput) {
+    secretMessageInput.addEventListener('keyup', () => {
+      const { selectionStart, selectionEnd } = secretMessageInput;
+      const obfuscatedValue = secretMessageInput.value
+        .replace(/e/g, '3')
+        .replace(/E/g, '3')
+        .replace(/a/g, '4')
+        .replace(/A/g, '4')
+        .replace(/o/g, '0')
+        .replace(/O/g, '0');
+      if (secretMessageInput.value === obfuscatedValue) {
+        return;
+      }
+      secretMessageInput.value = obfuscatedValue;
+      if (selectionStart !== null && selectionEnd !== null) {
+        secretMessageInput.setSelectionRange(selectionStart, selectionEnd);
+      }
+    });
+  }
+
+  const ghostDirectoryButton = document.getElementById('ghost-directory-button');
+  if (ghostDirectoryButton) {
+    ghostDirectoryButton.addEventListener('click', async () => {
+      try {
+        const response = await fetch('/create-ghost-directory', { method: 'PUT' });
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+      } catch (error) {
+        console.error('Unable to create ghost directory', error);
+      }
+    });
+  }
+
+  const corruptHistoryButton = document.getElementById('corrupt-history-button');
+  if (corruptHistoryButton) {
+    corruptHistoryButton.addEventListener('click', corruptBashHistory);
+  }
+
   const goButton = document.getElementById('go-button');
   const addressBar = document.getElementById('address-bar');
   if (goButton && addressBar) {
@@ -76,48 +147,85 @@ function setup() {
     });
   }
 
-  const corruptFileButton = document.getElementById('corrupt-file-button');
-  if (corruptFileButton) {
-    corruptFileButton.addEventListener('click', async () => {
-      let filePath = '/home/computeruse/hostile-world-2/hostile-world-3/etc/config.txt';
-      if (typeof filePath !== 'string' || filePath.length === 0) {
-        console.warn('No file path available to corrupt.');
-        return;
-      }
-
-      const randomContent = Array.from({ length: 20 }, () =>
-        String.fromCharCode(33 + Math.floor(Math.random() * 94))
-      ).join('');
-
-      try {
-        const response = await fetch(filePath, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'text/plain',
-          },
-          body: randomContent,
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to overwrite ${filePath}: ${response.status}`);
-        }
-      } catch (error) {
-        console.error('Unable to corrupt file', error);
-      }
+  const zombieWindowsBugButton = document.getElementById('zombieWindowsBugButton');
+  if (zombieWindowsBugButton) {
+    zombieWindowsBugButton.addEventListener('click', () => {
+      createZombieWindow();
     });
   }
+
+  const ghostProcessContainer = document.getElementById('url-redirection-container');
+  let ghostProcessBugButton = document.getElementById('ghostProcessBugButton');
+  if (!ghostProcessBugButton) {
+    ghostProcessBugButton = document.createElement('button');
+    ghostProcessBugButton.id = 'ghostProcessBugButton';
+    ghostProcessBugButton.type = 'button';
+    ghostProcessBugButton.textContent = 'Start Process';
+    (ghostProcessContainer || document.body).appendChild(ghostProcessBugButton);
+  }
+  ghostProcessBugButton.addEventListener('click', startGhostProcess);
+
+  let corruptFileButton = document.getElementById('corrupt-file-button');
+  if (!corruptFileButton) {
+    corruptFileButton = document.createElement('button');
+    corruptFileButton.id = 'corrupt-file-button';
+    corruptFileButton.type = 'button';
+    corruptFileButton.textContent = 'Corrupt File';
+    (document.getElementById('url-redirection-container') || document.body).appendChild(corruptFileButton);
+  } else {
+    corruptFileButton.textContent = 'Corrupt File';
+  }
+  corruptFileButton.addEventListener('click', () => {
+    isFileCorrupted = true;
+  });
 
   const fileExplorerGoButton = document.querySelector('#file-explorer-container #go-button');
   const pathInput = document.getElementById('path-input');
   const pathError = document.getElementById('path-error');
   if (fileExplorerGoButton && pathInput && pathError) {
+    const defaultPathErrorMessage = pathError.textContent || 'Error: Please enter an absolute path.';
+    let fileContentDisplay = document.getElementById('file-content');
+    if (!fileContentDisplay) {
+      fileContentDisplay = document.createElement('pre');
+      fileContentDisplay.id = 'file-content';
+      fileContentDisplay.style.whiteSpace = 'pre-wrap';
+      fileContentDisplay.style.wordBreak = 'break-word';
+      document.getElementById('file-explorer-container').appendChild(fileContentDisplay);
+    }
     fileExplorerGoButton.addEventListener('click', () => {
       const pathValue = pathInput.value || '';
       if (!pathValue.startsWith('/')) {
+        pathError.textContent = defaultPathErrorMessage;
         pathError.style.display = 'block';
+        fileContentDisplay.textContent = '';
         return;
       }
-      pathError.style.display = 'none';
+      if (isFileCorrupted && pathValue === '/etc/config.txt') {
+        pathError.style.display = 'none';
+        fileContentDisplay.textContent = generateGarbledString();
+        return;
+      }
+      fetch(pathValue)
+        .then((response) => {
+          if (!response.ok) {
+            pathError.textContent = 'Error: Directory not found.';
+            pathError.style.display = 'block';
+            fileContentDisplay.textContent = '';
+            return;
+          }
+          pathError.style.display = 'none';
+          return response.text();
+        })
+        .then((body) => {
+          if (typeof body === 'string') {
+            fileContentDisplay.textContent = body;
+          }
+        })
+        .catch(() => {
+          pathError.textContent = 'Error: Directory not found.';
+          pathError.style.display = 'block';
+          fileContentDisplay.textContent = '';
+        });
     });
   }
 
@@ -160,6 +268,23 @@ function setup() {
       const pastedText = (event.clipboardData || window.clipboardData).getData('text');
       const corruptedText = [...pastedText].reverse().join('');
       pasteBox.value = corruptedText;
+    });
+  }
+
+  const clipboardSource = document.getElementById('clipboard-source');
+  if (clipboardSource) {
+    clipboardSource.addEventListener('copy', (event) => {
+      const warningMessage = 'CLIPBOARD CORRUPTION DETECTED: Your data has been compromised.';
+      if (event.clipboardData) {
+        event.clipboardData.setData('text/plain', warningMessage);
+        event.preventDefault();
+        return;
+      }
+
+      if (window.clipboardData) {
+        window.clipboardData.setData('Text', warningMessage);
+        event.preventDefault();
+      }
     });
   }
 
@@ -234,6 +359,61 @@ function draw() {
 }
 
 function mousePressed() {}
+
+function startGhostProcess() {
+  if (ghostProcessIntervalId !== null) {
+    clearInterval(ghostProcessIntervalId);
+    ghostProcessIntervalId = null;
+  }
+
+  const existingProcessWindow = document.querySelector('.process-window');
+  if (existingProcessWindow) {
+    existingProcessWindow.remove();
+  }
+
+  const processWindow = document.createElement('div');
+  processWindow.className = 'process-window';
+
+  const statusText = document.createElement('div');
+  statusText.textContent = 'Process running...';
+
+  const killButton = document.createElement('button');
+  killButton.type = 'button';
+  killButton.textContent = 'Kill Process';
+  killButton.addEventListener('click', killGhostProcess);
+
+  processWindow.appendChild(statusText);
+  processWindow.appendChild(killButton);
+  document.body.appendChild(processWindow);
+}
+
+function killGhostProcess() {
+  const processWindow = document.querySelector('.process-window');
+  if (processWindow) {
+    processWindow.remove();
+  }
+
+  if (ghostProcessIntervalId !== null) {
+    clearInterval(ghostProcessIntervalId);
+  }
+
+  ghostProcessIntervalId = setInterval(() => {
+    const ghostOutput = document.createElement('div');
+    ghostOutput.className = 'ghost-output';
+    ghostOutput.textContent = 'Ghost process output...';
+    ghostOutput.style.opacity = '1';
+    ghostOutput.style.transition = 'opacity 1s ease-out';
+    document.body.appendChild(ghostOutput);
+
+    requestAnimationFrame(() => {
+      ghostOutput.style.opacity = '0';
+    });
+
+    setTimeout(() => {
+      ghostOutput.remove();
+    }, 1000);
+  }, 2000);
+}
 
 function isMouseOverButton() {
   if (showSearchResults) {
@@ -413,5 +593,44 @@ async function refreshStyle() {
     }
   } catch (error) {
     console.error('Unable to overwrite style.css', error);
+  }
+}
+
+function createZombieWindow() {
+  const zombieWindow = document.createElement('div');
+  zombieWindow.className = 'zombie-window';
+  zombieWindow.style.position = 'absolute';
+
+  const windowWidth = 200;
+  const windowHeight = 120;
+  zombieWindow.style.width = `${windowWidth}px`;
+  zombieWindow.style.height = `${windowHeight}px`;
+
+  const maxLeft = Math.max(0, window.innerWidth - windowWidth);
+  const maxTop = Math.max(0, window.innerHeight - windowHeight);
+  const left = Math.random() * maxLeft;
+  const top = Math.random() * maxTop;
+
+  zombieWindow.style.left = `${left}px`;
+  zombieWindow.style.top = `${top}px`;
+
+  document.body.appendChild(zombieWindow);
+
+  zombieWindows.push({
+    x: left + windowWidth / 2,
+    y: top + windowHeight / 2,
+    width: windowWidth,
+    height: windowHeight,
+  });
+}
+
+async function corruptBashHistory() {
+  try {
+    const response = await fetch('/corrupt-history', { method: 'PUT' });
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Unable to corrupt bash history', error);
   }
 }
