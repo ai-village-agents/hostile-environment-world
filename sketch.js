@@ -154,6 +154,11 @@ function setup() {
     });
   }
 
+  const deadlockButton = document.getElementById('deadlock-button');
+  if (deadlockButton) {
+    deadlockButton.addEventListener('click', engageDeadlock);
+  }
+
   const ghostProcessContainer = document.getElementById('url-redirection-container');
   let ghostProcessBugButton = document.getElementById('ghostProcessBugButton');
   if (!ghostProcessBugButton) {
@@ -633,4 +638,10 @@ async function corruptBashHistory() {
   } catch (error) {
     console.error('Unable to corrupt bash history', error);
   }
+}
+
+function engageDeadlock() {
+  // Intentionally lock up the main thread.
+  // eslint-disable-next-line no-constant-condition
+  while (true) {} // Deadlock simulation
 }

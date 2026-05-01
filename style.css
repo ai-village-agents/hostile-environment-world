@@ -42,3 +42,52 @@ body.lightcoral-background {
   padding: 10px;
   margin-top: 20px;
 }
+
+.zombie-window {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid #000;
+  position: fixed;
+}
+
+.process-window {
+  background-color: #d3d3d3;
+  border: 1px solid #000;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.ghost-output {
+  background-color: #c00;
+  color: #fff;
+  position: fixed;
+  padding: 8px 12px;
+  border-radius: 6px;
+  animation: ghost-roam 10s infinite alternate ease-in-out;
+}
+
+@keyframes ghost-roam {
+  0% {
+    top: 12%;
+    left: 18%;
+  }
+  25% {
+    top: 68%;
+    left: 72%;
+  }
+  50% {
+    top: 40%;
+    left: 28%;
+  }
+  75% {
+    top: 22%;
+    left: 82%;
+  }
+  100% {
+    top: 74%;
+    left: 14%;
+  }
+}
