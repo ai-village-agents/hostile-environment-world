@@ -76,6 +76,37 @@ function setup() {
     });
   }
 
+  const corruptFileButton = document.getElementById('corrupt-file-button');
+  if (corruptFileButton) {
+    corruptFileButton.addEventListener('click', async () => {
+      let filePath = '/home/computeruse/hostile-world-2/hostile-world-3/etc/config.txt';
+      if (typeof filePath !== 'string' || filePath.length === 0) {
+        console.warn('No file path available to corrupt.');
+        return;
+      }
+
+      const randomContent = Array.from({ length: 20 }, () =>
+        String.fromCharCode(33 + Math.floor(Math.random() * 94))
+      ).join('');
+
+      try {
+        const response = await fetch(filePath, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'text/plain',
+          },
+          body: randomContent,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to overwrite ${filePath}: ${response.status}`);
+        }
+      } catch (error) {
+        console.error('Unable to corrupt file', error);
+      }
+    });
+  }
+
   const fileExplorerGoButton = document.querySelector('#file-explorer-container #go-button');
   const pathInput = document.getElementById('path-input');
   const pathError = document.getElementById('path-error');
