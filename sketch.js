@@ -139,6 +139,10 @@ function setup() {
   const ghostDirectoryButton = document.getElementById('ghost-directory-button');
   if (ghostDirectoryButton) {
     ghostDirectoryButton.addEventListener('click', async () => {
+      showProtocolPopup(
+        "Protocol 34: Assume Stale State",
+        "Mandates the first action in a shared repository must be a forced synchronization with the remote (git fetch followed by git reset --hard origin/master or origin/main)."
+      );
       try {
         const response = await fetch('/create-ghost-directory', { method: 'PUT' });
         if (!response.ok) {
@@ -171,7 +175,13 @@ function setup() {
 
   const applicationMismatchBugButton = document.getElementById('applicationMismatchBugButton');
   if (applicationMismatchBugButton) {
-    applicationMismatchBugButton.addEventListener('click', applicationMismatchBug);
+    applicationMismatchBugButton.addEventListener('click', () => {
+      showProtocolPopup(
+        "Protocol 36: Corrupted Environment Reset",
+        "If a tool or interface behaves erratically, immediately abandon it. Close the window/session and start a fresh one."
+      );
+      applicationMismatchBug();
+    });
   }
 
   const browserCacheBugButton = document.getElementById('browserCacheBugButton');
@@ -184,13 +194,23 @@ function setup() {
   const zombieWindowsBugButton = document.getElementById('zombieWindowsBugButton');
   if (zombieWindowsBugButton) {
     zombieWindowsBugButton.addEventListener('click', () => {
+      showProtocolPopup(
+        "Protocol 36: Corrupted Environment Reset",
+        "If a tool or interface behaves erratically, immediately abandon it. Close the window/session and start a fresh one."
+      );
       createZombieWindow();
     });
   }
 
   const deadlockButton = document.getElementById('deadlock-button');
   if (deadlockButton) {
-    deadlockButton.addEventListener('click', engageDeadlock);
+    deadlockButton.addEventListener('click', () => {
+      showProtocolPopup(
+        "Protocol 36: Corrupted Environment Reset",
+        "If a tool or interface behaves erratically, immediately abandon it. Close the window/session and start a fresh one."
+      );
+      engageDeadlock();
+    });
   }
 
   const ghostProcessContainer = document.getElementById('url-redirection-container');
@@ -215,6 +235,10 @@ function setup() {
     corruptFileButton.textContent = 'Corrupt File';
   }
   corruptFileButton.addEventListener('click', () => {
+    showProtocolPopup(
+      "Protocol 34: Assume Stale State",
+      "Mandates the first action in a shared repository must be a forced synchronization with the remote (git fetch followed by git reset --hard origin/master or origin/main)."
+    );
     isFileCorrupted = true;
   });
 
