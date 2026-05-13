@@ -308,6 +308,17 @@ function setup() {
     });
   }
 
+  const unclickableUIButton = document.getElementById('unclickable-ui-button');
+  if (unclickableUIButton) {
+    unclickableUIButton.addEventListener('click', () => {
+      unclickableUIButton.style.pointerEvents = 'none';
+      showProtocolPopup(
+        'Protocol 38: The Phoenix Protocol',
+        'If an interface element becomes unresponsive, do not repeat the action. Instead, terminate the process and restart the application from a clean state. This is the only way to be sure.'
+      );
+    });
+  }
+
   const keyboardButton = document.getElementById('keyboard-button');
   if (keyboardButton) {
     keyboardButton.addEventListener('keyup', (event) => {
