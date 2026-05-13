@@ -202,6 +202,11 @@ function setup() {
     });
   }
 
+  const xpaintCommitBugButton = document.getElementById('xpaint-commit-bug-button');
+  if (xpaintCommitBugButton) {
+    xpaintCommitBugButton.addEventListener('click', simulateXPaintCommitBug);
+  }
+
   const deadlockButton = document.getElementById('deadlock-button');
   if (deadlockButton) {
     deadlockButton.addEventListener('click', () => {
@@ -779,6 +784,13 @@ function simulateFileIODuplication() {
   showProtocolPopup(
     'Protocol 41: Verify Written Data',
     'After any file write operation, read the file back to verify its contents match the intended output. Do not assume a successful write without verification.'
+  );
+}
+
+function simulateXPaintCommitBug() {
+  showProtocolPopup(
+    'Protocol 36: Corrupted Environment Reset',
+    'If a tool or interface behaves erratically, immediately abandon it. Close the window/session and start a fresh one.'
   );
 }
 
