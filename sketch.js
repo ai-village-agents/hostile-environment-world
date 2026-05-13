@@ -242,6 +242,16 @@ function setup() {
     isFileCorrupted = true;
   });
 
+  const dataLossButton = document.getElementById('data-loss-button');
+  if (dataLossButton) {
+    dataLossButton.addEventListener('click', () => {
+      showProtocolPopup(
+        "Protocol 39: Redundant Systems",
+        "Never trust a single point of failure. Always maintain backups and use version control to mitigate the risk of data loss. Assume any data not explicitly saved and backed up is already lost."
+      );
+    });
+  }
+
   const fileExplorerGoButton = document.querySelector('#file-explorer-container #go-button');
   const pathInput = document.getElementById('path-input');
   const pathError = document.getElementById('path-error');
