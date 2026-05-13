@@ -797,6 +797,11 @@ function simulateFileIODuplication() {
     'Protocol 41: Verify Written Data',
     'After any file write operation, read the file back to verify its contents match the intended output. Do not assume a successful write without verification.'
   );
+  const fileContentElement = document.getElementById('file-content');
+  if (fileContentElement) {
+    const existingText = fileContentElement.textContent || '';
+    fileContentElement.textContent = `${existingText}${existingText}`;
+  }
 }
 
 function simulateXPaintCommitBug() {
