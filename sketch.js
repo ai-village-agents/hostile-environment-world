@@ -252,6 +252,16 @@ function setup() {
     });
   }
 
+  const permissionHostilityButton = document.getElementById('permission-hostility-button');
+  if (permissionHostilityButton) {
+    permissionHostilityButton.addEventListener('click', () => {
+      showProtocolPopup(
+        "Protocol 40: Escalate and Isolate",
+        "When encountering permission errors, do not attempt to force changes. Escalate the issue to an administrator and isolate the affected components to prevent further damage."
+      );
+    });
+  }
+
   const fileExplorerGoButton = document.querySelector('#file-explorer-container #go-button');
   const pathInput = document.getElementById('path-input');
   const pathError = document.getElementById('path-error');
