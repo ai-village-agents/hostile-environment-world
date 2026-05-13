@@ -351,6 +351,11 @@ function setup() {
     });
   }
 
+  const silentStateLossButton = document.getElementById('silent-state-loss-button');
+  if (silentStateLossButton) {
+    silentStateLossButton.addEventListener('click', simulateSilentStateLoss);
+  }
+
   const fileExplorer = document.getElementById('file-explorer');
   if (fileExplorer) {
     const directories = ['My Documents', 'Secret Files (Corrupted)'];
@@ -725,6 +730,13 @@ function engageGuiToolCollapse() {
       overlay.remove();
     }
   }, 120000);
+}
+
+function simulateSilentStateLoss() {
+  showProtocolPopup(
+    "Protocol 37: Verify, Don't Assume",
+    "Always verify your current directory and state after a context switch or unexpected behavior."
+  );
 }
 
 function showProtocolPopup(protocolName, protocolDescription) {
