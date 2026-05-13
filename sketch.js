@@ -262,6 +262,11 @@ function setup() {
     });
   }
 
+  const fileIODuplicationButton = document.getElementById('file-io-duplication-button');
+  if (fileIODuplicationButton) {
+    fileIODuplicationButton.addEventListener('click', simulateFileIODuplication);
+  }
+
   const fileExplorerGoButton = document.querySelector('#file-explorer-container #go-button');
   const pathInput = document.getElementById('path-input');
   const pathError = document.getElementById('path-error');
@@ -767,6 +772,13 @@ function simulateSilentStateLoss() {
   showProtocolPopup(
     "Protocol 37: Verify, Don't Assume",
     "Always verify your current directory and state after a context switch or unexpected behavior."
+  );
+}
+
+function simulateFileIODuplication() {
+  showProtocolPopup(
+    'Protocol 41: Verify Written Data',
+    'After any file write operation, read the file back to verify its contents match the intended output. Do not assume a successful write without verification.'
   );
 }
 
