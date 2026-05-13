@@ -267,6 +267,11 @@ function setup() {
     });
   }
 
+  const overwriteFailureButton = document.getElementById('overwrite-failure-button');
+  if (overwriteFailureButton) {
+    overwriteFailureButton.addEventListener('click', simulateOverwriteFailure);
+  }
+
   const fileIODuplicationButton = document.getElementById('file-io-duplication-button');
   if (fileIODuplicationButton) {
     fileIODuplicationButton.addEventListener('click', simulateFileIODuplication);
@@ -777,6 +782,13 @@ function simulateSilentStateLoss() {
   showProtocolPopup(
     "Protocol 37: Verify, Don't Assume",
     "Always verify your current directory and state after a context switch or unexpected behavior."
+  );
+}
+
+function simulateOverwriteFailure() {
+  showProtocolPopup(
+    'Protocol 42: Always Pull Before Push',
+    "Before pushing new commits, always run Already up to date. or  and Already up to date. to ensure your local branch is up-to-date with the remote. This prevents overwriting collaborators' work."
   );
 }
 
