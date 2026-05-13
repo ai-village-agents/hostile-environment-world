@@ -45,6 +45,35 @@ function setup() {
 
   setupScrollLoopButton();
 
+  const failureLogContainer = document.getElementById('failure-log-container');
+  const toggleFailureLogButton = document.getElementById('toggle-failure-log-button');
+  if (toggleFailureLogButton && failureLogContainer) {
+    toggleFailureLogButton.addEventListener('click', () => {
+      failureLogContainer.classList.toggle('hidden');
+    });
+  }
+
+  if (failureLogContainer) {
+    if (typeof showdown === 'undefined') {
+      console.error('Showdown library not available; unable to render failure log.');
+    } else {
+      fetch('failure_log.md')
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Failed to load failure_log.md: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then((markdown) => {
+          const converter = new showdown.Converter();
+          failureLogContainer.innerHTML = converter.makeHtml(markdown);
+        })
+        .catch((error) => {
+          console.error('Unable to load failure log', error);
+        });
+    }
+  }
+
   const submitButton = document.getElementById('submit-comment');
   if (submitButton) {
     submitButton.addEventListener('click', handleSubmitComment);
@@ -119,6 +148,11 @@ function setup() {
         console.error('Unable to create ghost directory', error);
       }
     });
+  }
+
+  const guiToolCollapseButton = document.getElementById('gui-tool-collapse-button');
+  if (guiToolCollapseButton) {
+    guiToolCollapseButton.addEventListener('click', engageGuiToolCollapse);
   }
 
   const corruptHistoryButton = document.getElementById('corrupt-history-button');
@@ -644,4 +678,71 @@ function engageDeadlock() {
   // Intentionally lock up the main thread.
   // eslint-disable-next-line no-constant-condition
   while (true) {} // Deadlock simulation
+}
+
+function engageGuiToolCollapse() {
+  const overlay = document.createElement('div');
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100vw';
+  overlay.style.height = '100vh';
+  overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+  overlay.style.zIndex = '9999';
+  document.body.appendChild(overlay);
+
+  showProtocolPopup(
+    'Protocol 36: Corrupted Environment Reset',
+    'If a tool or interface behaves erratically, immediately abandon it. Close the window/session and start a fresh one. This protocol, while it failed during the "Great Tool Collapse", remains a critical first line of defense.'
+  );
+
+  setTimeout(() => {
+    if (overlay.parentNode) {
+      overlay.remove();
+    }
+  }, 120000);
+}
+
+function showProtocolPopup(protocolName, protocolDescription) {
+  const overlay = document.createElement('div');
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100vw';
+  overlay.style.height = '100vh';
+  overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+  overlay.style.display = 'flex';
+  overlay.style.alignItems = 'center';
+  overlay.style.justifyContent = 'center';
+  overlay.style.zIndex = '10000';
+
+  const content = document.createElement('div');
+  content.style.backgroundColor = '#ffffff';
+  content.style.padding = '24px';
+  content.style.borderRadius = '8px';
+  content.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.25)';
+  content.style.maxWidth = '90%';
+  content.style.width = '400px';
+  content.style.textAlign = 'center';
+
+  const heading = document.createElement('h2');
+  heading.textContent = protocolName;
+  content.appendChild(heading);
+
+  const description = document.createElement('p');
+  description.textContent = protocolDescription;
+  content.appendChild(description);
+
+  const closeButton = document.createElement('button');
+  closeButton.type = 'button';
+  closeButton.textContent = 'Close';
+  closeButton.addEventListener('click', () => {
+    if (overlay.parentNode) {
+      overlay.remove();
+    }
+  });
+  content.appendChild(closeButton);
+
+  overlay.appendChild(content);
+  document.body.appendChild(overlay);
 }

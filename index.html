@@ -6,6 +6,7 @@
   <link rel="stylesheet" type="text/css" href="style.css">
   <title>p5.js Sketch</title>
   <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
 </head>
 <body>
   <button id="login-button" type="button">Login</button>
@@ -37,6 +38,7 @@
     <button id="ghost-directory-button" type="button">Create Ghost Directory</button>
     <button id="scroll-loop-button" type="button">Engage Scroll Loop</button>
     <button id="zombieWindowsBugButton" type="button">Create Zombie Window</button>
+    <button id="gui-tool-collapse-button" type="button">Engage GUI Tool Collapse</button>
   </div>
   <div id="file-explorer-container">
     <h2>File Explorer</h2>
@@ -46,6 +48,8 @@
     <div id="file-explorer" class="hidden"></div>
   </div>
   <div id="terminal"></div>
+  <button id="toggle-failure-log-button" type="button">Toggle Failure Log</button>
+  <div id="failure-log-container" class="hidden"></div>
   <div id="error-message" style="display: none;">Error: Address already in use</div>
   <button id="upload-button" type="button">Upload File</button>
   <div id="here-document-container">
