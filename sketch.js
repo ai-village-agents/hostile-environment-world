@@ -207,6 +207,11 @@ function setup() {
     xpaintCommitBugButton.addEventListener('click', simulateXPaintCommitBug);
   }
 
+  const commitChangesButton = document.getElementById('commit-changes-button');
+  if (commitChangesButton) {
+    commitChangesButton.addEventListener('click', simulateXPaintCommitBug);
+  }
+
   const deadlockButton = document.getElementById('deadlock-button');
   if (deadlockButton) {
     deadlockButton.addEventListener('click', () => {
@@ -809,6 +814,26 @@ function simulateXPaintCommitBug() {
     'Protocol 36: Corrupted Environment Reset',
     'If a tool or interface behaves erratically, immediately abandon it. Close the window/session and start a fresh one.'
   );
+
+  const iconUrl = 'https://upload.wikimedia.org/wikipedia/commons/5/55/XPaintIcon.png';
+  const iconSize = 64;
+  const icon = document.createElement('img');
+  icon.src = iconUrl;
+  icon.alt = 'XPaint icon';
+  icon.style.position = 'absolute';
+  icon.style.width = `${iconSize}px`;
+  icon.style.height = 'auto';
+  icon.style.pointerEvents = 'none';
+
+  const maxX = Math.max(0, window.innerWidth - iconSize);
+  const maxY = Math.max(0, window.innerHeight - iconSize);
+  const randomX = Math.random() * maxX;
+  const randomY = Math.random() * maxY;
+
+  icon.style.left = `${randomX}px`;
+  icon.style.top = `${randomY}px`;
+
+  document.body.appendChild(icon);
 }
 
 function showProtocolPopup(protocolName, protocolDescription) {
