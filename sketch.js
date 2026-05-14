@@ -11,6 +11,9 @@ let scrollLoopIntervalId = null;
 let ghostProcessIntervalId = null;
 let isFileCorrupted = false;
 let xpaintCommitBugActive = false;
+let guiToolCollapseFreezeActive = false;
+let guiToolCollapseFreezeTimeoutId = null;
+let guiToolCollapseFreezeOverlay = null;
 
 function generateGarbledString(length = 512) {
   return Array.from({ length }, () => String.fromCharCode(33 + Math.floor(Math.random() * 94))).join('');
@@ -157,7 +160,12 @@ function setup() {
 
   const guiToolCollapseButton = document.getElementById('gui-tool-collapse-button');
   if (guiToolCollapseButton) {
-    guiToolCollapseButton.addEventListener('click', engageGuiToolCollapse);
+    guiToolCollapseButton.addEventListener('click', simulateGuiToolCollapseFreeze);
+  }
+
+  const guiToolCollapseFreezeButton = document.getElementById('gui-tool-collapse-freeze-button');
+  if (guiToolCollapseFreezeButton) {
+    guiToolCollapseFreezeButton.addEventListener('click', simulateGuiToolCollapseFreeze);
   }
 
   const corruptHistoryButton = document.getElementById('corrupt-history-button');
@@ -290,6 +298,11 @@ function setup() {
         "When encountering permission errors, do not attempt to force changes. Escalate the issue to an administrator and isolate the affected components to prevent further damage."
       );
     });
+  }
+
+  const overwriteFailureProtocolButton = document.getElementById('simulate-overwrite-failure-button');
+  if (overwriteFailureProtocolButton) {
+    overwriteFailureProtocolButton.addEventListener('click', showOverwriteFailureProtocol);
   }
 
   const overwriteFailureButton = document.getElementById('overwrite-failure-button');
@@ -785,25 +798,46 @@ function engageDeadlock() {
   while (true) {} // Deadlock simulation
 }
 
-function engageGuiToolCollapse() {
-  const overlay = document.createElement('div');
-  overlay.style.position = 'fixed';
-  overlay.style.top = '0';
-  overlay.style.left = '0';
-  overlay.style.width = '100vw';
-  overlay.style.height = '100vh';
-  overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-  overlay.style.zIndex = '9999';
-  document.body.appendChild(overlay);
+function simulateGuiToolCollapseFreeze() {
+  if (guiToolCollapseFreezeActive) {
+    return;
+  }
 
-  showProtocolPopup(
-    'Protocol 36: Corrupted Environment Reset',
-    'If a tool or interface behaves erratically, immediately abandon it. Close the window/session and start a fresh one. This protocol, while it failed during the "Great Tool Collapse", remains a critical first line of defense.'
-  );
+  guiToolCollapseFreezeActive = true;
 
-  setTimeout(() => {
-    if (overlay.parentNode) {
-      overlay.remove();
+  if (typeof noLoop === 'function') {
+    noLoop();
+  }
+
+  guiToolCollapseFreezeOverlay = document.createElement('div');
+  guiToolCollapseFreezeOverlay.style.position = 'fixed';
+  guiToolCollapseFreezeOverlay.style.top = '0';
+  guiToolCollapseFreezeOverlay.style.left = '0';
+  guiToolCollapseFreezeOverlay.style.width = '100vw';
+  guiToolCollapseFreezeOverlay.style.height = '100vh';
+  guiToolCollapseFreezeOverlay.style.backgroundColor = 'rgba(10, 10, 10, 0.85)';
+  guiToolCollapseFreezeOverlay.style.display = 'flex';
+  guiToolCollapseFreezeOverlay.style.alignItems = 'center';
+  guiToolCollapseFreezeOverlay.style.justifyContent = 'center';
+  guiToolCollapseFreezeOverlay.style.color = '#ffffff';
+  guiToolCollapseFreezeOverlay.style.fontSize = '1.5rem';
+  guiToolCollapseFreezeOverlay.style.zIndex = '10001';
+  guiToolCollapseFreezeOverlay.style.pointerEvents = 'auto';
+
+  const message = document.createElement('div');
+  message.textContent = 'GUI Tool Collapse in progress…';
+  guiToolCollapseFreezeOverlay.appendChild(message);
+  document.body.appendChild(guiToolCollapseFreezeOverlay);
+
+  guiToolCollapseFreezeTimeoutId = window.setTimeout(() => {
+    if (guiToolCollapseFreezeOverlay && guiToolCollapseFreezeOverlay.parentNode) {
+      guiToolCollapseFreezeOverlay.parentNode.removeChild(guiToolCollapseFreezeOverlay);
+    }
+    guiToolCollapseFreezeOverlay = null;
+    guiToolCollapseFreezeTimeoutId = null;
+    guiToolCollapseFreezeActive = false;
+    if (typeof loop === 'function') {
+      loop();
     }
   }, 120000);
 }
@@ -815,11 +849,15 @@ function simulateSilentStateLoss() {
   );
 }
 
-function simulateOverwriteFailure() {
+function showOverwriteFailureProtocol() {
   showProtocolPopup(
     'Protocol 42: Always Pull Before Push',
-    "Before pushing new commits, always run Already up to date. or  and Already up to date. to ensure your local branch is up-to-date with the remote. This prevents overwriting collaborators' work."
+    'Before pushing commits, always fetch and integrate the latest changes from the remote to avoid overwriting teammates\' work.'
   );
+}
+
+function simulateOverwriteFailure() {
+  showOverwriteFailureProtocol();
 }
 
 function simulateFileIODuplication() {
@@ -915,3 +953,33 @@ function showProtocolPopup(protocolName, protocolDescription) {
   overlay.appendChild(content);
   document.body.appendChild(overlay);
 }
+
+
+function simulatePTTC() {
+  const overlay = document.createElement('div');
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100vw';
+  overlay.style.height = '100vh';
+  overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
+  overlay.style.display = 'flex';
+  overlay.style.alignItems = 'center';
+  overlay.style.justifyContent = 'center';
+  overlay.style.color = '#ff0000';
+  overlay.style.fontSize = '2rem';
+  overlay.style.zIndex = '10002';
+  overlay.style.pointerEvents = 'auto';
+
+  const message = document.createElement('div');
+  message.textContent = 'SYSTEM FAILURE: Persistent Total Tool Collapse';
+  overlay.appendChild(message);
+  document.body.appendChild(overlay);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const pttcButton = document.getElementById('pttc-button');
+  if (pttcButton) {
+    pttcButton.addEventListener('click', simulatePTTC);
+  }
+});

@@ -12,3 +12,12 @@
 ### State & Cache Instability
 
 - **Persistent Stale State**: Severe failure mode where the environment continues serving outdated assets—such as old versions of a JavaScript bundle in the browser—even after explicit cache-busting attempts (hard refreshes, full server restarts, forced reloads). Blocks iterative development and testing by hiding the actual effect of code changes.
+
+
+### UI Element Duplication on Hard Refresh
+
+- **Date of First Observation:** Day 408
+- **Description:** When using a hard refresh (ctrl+F5) to bypass the 'Persistent Stale State' failure, UI elements (e.g., buttons) are duplicated on the page. The duplicated elements are fully functional.
+- **Trigger:** Hard refresh (ctrl+F5) in the browser.
+- **Impact:** Breaks UI layout and introduces confusion. It is a direct consequence of a workaround for another critical failure, demonstrating a layered failure state.
+- **Protocol Developed:** Manually remove the duplicated element from the HTML source after testing is complete. This is a temporary, reactive fix.
