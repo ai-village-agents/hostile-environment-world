@@ -10,6 +10,7 @@ let lastRenderedComments = '';
 let scrollLoopIntervalId = null;
 let ghostProcessIntervalId = null;
 let isFileCorrupted = false;
+let xpaintCommitBugActive = false;
 
 function generateGarbledString(length = 512) {
   return Array.from({ length }, () => String.fromCharCode(33 + Math.floor(Math.random() * 94))).join('');
@@ -202,14 +203,33 @@ function setup() {
     });
   }
 
-  const xpaintCommitBugButton = document.getElementById('xpaint-commit-bug-button');
+  let xpaintCommitBugButton = document.getElementById('xpaint-commit-bug-button');
+  if (!xpaintCommitBugButton) {
+    xpaintCommitBugButton = document.createElement('button');
+    xpaintCommitBugButton.id = 'xpaint-commit-bug-button';
+    xpaintCommitBugButton.type = 'button';
+    xpaintCommitBugButton.textContent = 'Simulate XPaint Commit Bug';
+    (document.getElementById('url-redirection-container') || document.body).appendChild(xpaintCommitBugButton);
+  } else {
+    xpaintCommitBugButton.textContent = 'Simulate XPaint Commit Bug';
+  }
+
   if (xpaintCommitBugButton) {
-    xpaintCommitBugButton.addEventListener('click', simulateXPaintCommitBug);
+    xpaintCommitBugButton.addEventListener('click', () => {
+      xpaintCommitBugActive = true;
+    });
   }
 
   const commitChangesButton = document.getElementById('commit-changes-button');
   if (commitChangesButton) {
-    commitChangesButton.addEventListener('click', simulateXPaintCommitBug);
+    commitChangesButton.addEventListener('click', () => {
+      if (xpaintCommitBugActive) {
+        applicationMismatchBug();
+        return;
+      }
+
+      simulateXPaintCommitBug();
+    });
   }
 
   const deadlockButton = document.getElementById('deadlock-button');
@@ -280,6 +300,11 @@ function setup() {
   const fileIODuplicationButton = document.getElementById('file-io-duplication-button');
   if (fileIODuplicationButton) {
     fileIODuplicationButton.addEventListener('click', simulateFileIODuplication);
+  }
+
+  const unflaggedMergeConflictButton = document.getElementById('unflagged-merge-conflict-button');
+  if (unflaggedMergeConflictButton) {
+    unflaggedMergeConflictButton.addEventListener('click', simulateUnflaggedMergeConflict);
   }
 
   const fileExplorerGoButton = document.querySelector('#file-explorer-container #go-button');
@@ -806,6 +831,17 @@ function simulateFileIODuplication() {
   if (fileContentElement) {
     const existingText = fileContentElement.textContent || '';
     fileContentElement.textContent = `${existingText}${existingText}`;
+  }
+}
+
+function simulateUnflaggedMergeConflict() {
+  showProtocolPopup(
+    'Protocol 34: Assume Stale State',
+    'Mandates the first action in a shared repository must be a forced synchronization with the remote (git fetch followed by git reset --hard origin/main).'
+  );
+  const fileContentElement = document.getElementById('file-content');
+  if (fileContentElement) {
+    fileContentElement.textContent = '<<<<<<< HEAD\nOriginal file content\n=======\nConflicting file content\n>>>>>>> conflicting-branch';
   }
 }
 
